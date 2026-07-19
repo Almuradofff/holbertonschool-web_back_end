@@ -66,7 +66,7 @@ class Server:
         return csv_list[start:end]
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
-        """Returns a dictionary containing hypermedia pagination information."""
+        """Return hypermedia pagination information."""
         assert isinstance(page, int)
         assert isinstance(page_size, int)
         assert page > 0
@@ -89,3 +89,4 @@ class Server:
             "prev_page": prev_page,
             "total_pages": total_pages
         }
+        
