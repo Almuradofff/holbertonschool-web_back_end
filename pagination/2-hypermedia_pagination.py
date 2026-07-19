@@ -52,10 +52,10 @@ class Server:
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """Gets specific data
         """
-        assert page > 0
-        assert page_size > 0
         assert isinstance(page, int)
         assert isinstance(page_size, int)
+        assert page > 0
+        assert page_size > 0
         myRange = index_range(page, page_size)
         start = myRange[0]
         end = myRange[1]
@@ -68,16 +68,14 @@ class Server:
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
         """Returns a dictionary containing hypermedia pagination information.
         """
-        assert page > 0
-        assert page_size > 0
         assert isinstance(page, int)
         assert isinstance(page_size, int)
+        assert page > 0
+        assert page_size > 0
 
-        csv_list = self.dataset()
-        total_items = len(csv_list)
-        total_pages = math.ceil(total_items / page_size)
+       data = self.get_page(page, page_size)
 
-        start, end = self.index_range(page, page_size)
+        start, end = index_range(page, page_size)
         data = csv_list[start:end]
 
         next_page = page + 1 if page < total_pages else None
