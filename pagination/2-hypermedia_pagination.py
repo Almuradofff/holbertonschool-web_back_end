@@ -1,4 +1,3 @@
-```python
 #!/usr/bin/env python3
 """Hypermedia pagination."""
 
@@ -8,14 +7,14 @@ from typing import Dict, List
 
 
 def index_range(page: int, page_size: int) -> tuple:
-    """Return a tuple containing start and end indexes."""
+    """Return start and end indexes."""
     start = (page - 1) * page_size
     end = start + page_size
     return (start, end)
 
 
 class Server:
-    """Server class to paginate a database of popular baby names."""
+    """Server class to paginate a database."""
 
     DATA_FILE = "Popular_Baby_Names.csv"
 
@@ -24,7 +23,7 @@ class Server:
         self.__dataset = None
 
     def dataset(self) -> List[List]:
-        """Cache and return the dataset."""
+        """Return the cached dataset."""
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
                 dataset = list(csv.reader(f))
@@ -47,7 +46,10 @@ class Server:
     ) -> Dict:
         """Return hypermedia pagination information."""
         data = self.get_page(page, page_size)
-        total_pages = math.ceil(len(self.dataset()) / page_size)
+
+        total_pages = math.ceil(
+            len(self.dataset()) / page_size
+        )
 
         next_page = page + 1 if page < total_pages else None
         prev_page = page - 1 if page > 1 else None
@@ -60,4 +62,3 @@ class Server:
             "prev_page": prev_page,
             "total_pages": total_pages
         }
-```
