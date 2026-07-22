@@ -1,82 +1,60 @@
 #!/usr/bin/env python3
-"""Module contains function that returns pagination range
-Imports:
-    Typing: Type annotation module
-    Tuple: Tuple type annotation
-    List: List type anotaton
-    Dict: Dict type annotation
-    csv: csv module
-"""
+"""Hypermedia pagination."""
+
 import csv
-from typing import List
-from typing import Tuple
-from typing import Dict
 import math
+from typing import List
+from typing import Dict
 
 
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """Function returns pagination range
-
-    Args:
-        page (int): page number
-        page_size (int): page size
-
-    Returns:
-        Tuple[int, int]: start to end range
-    """
+def index_range(page: int, page_size: int) -> tuple:
+    """Return start and end indexes."""
     start = (page - 1) * page_size
-    end = page * page_size
-
-    return ((start, end))
+    end = start + page_size
+    return (start, end)
 
 
 class Server:
-    """Server class to paginate a database of popular baby names.
-    """
+    """Server class to paginate a database."""
+
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
+        """Initialize."""
         self.__dataset = None
 
     def dataset(self) -> List[List]:
-        """Cached dataset
-        """
+        """Cached dataset."""
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
-                reader = csv.reader(f)
-                dataset = [row for row in reader]
+                dataset = list(csv.reader(f))
             self.__dataset = dataset[1:]
 
         return self.__dataset
 
-    def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """Gets specific data
-        """
-        assert isinstance(page, int)
-        assert isinstance(page_size, int)
-        assert page > 0
-        assert page_size > 0
-        myRange = index_range(page, page_size)
-        start = myRange[0]
-        end = myRange[1]
-        csv_list = self.dataset()
+    def get_page(
+        self,
+        page: int = 1,
+        page_size: int = 10
+    ) -> List[List]:
+        """Return a page of the dataset."""
+        assert isinstance(page, int) and page > 0
+        assert isinstance(page_size, int) and page_size > 0
 
-        if start >= len(csv_list):
-            return []
-        return csv_list[start:end]
+        start, end = index_range(page, page_size)
+        return self.dataset()[start:end]
 
-    def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
+    def get_hyper(
+        self,
+        page: int = 1,
+        page_size: int = 10
+    ) -> Dict:
         """Return hypermedia pagination information."""
-        assert isinstance(page, int)
-        assert isinstance(page_size, int)
-        assert page > 0
-        assert page_size > 0
-
-        csv_list = self.dataset()
-        total_items = len(csv_list)
-        total_pages = math.ceil(total_items / page_size)
-
         data = self.get_page(page, page_size)
+
+        total_pages = math.ceil(
+            len(self.dataset()) / page_size
+        )
 
         next_page = page + 1 if page < total_pages else None
         prev_page = page - 1 if page > 1 else None
@@ -89,4 +67,3 @@ class Server:
             "prev_page": prev_page,
             "total_pages": total_pages
         }
-        
